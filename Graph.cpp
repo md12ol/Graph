@@ -153,7 +153,7 @@ int Graph::SIR(int p0, double alpha, vector<int> &epiProfile, int &totInf) {
 
 bool Graph::infect(int numInfNeighs, double alpha) {
     double beta = 1.0 - exp(numInfNeighs * log(1 - alpha));
-    if (drand48() < beta) return true;
+    if (std::uniform_real_distribution<double>(0.0, 1.0)(rng) < beta) return true;
     return false;
 }
 
@@ -188,13 +188,12 @@ int Graph::SIRwithVariants(int p0, double varAlphas[], bool coupled, double newV
         std::fill(varDNAs[node].begin(), varDNAs[node].end(), 0); // Zeros in Variant Strings
     }
 
-    shuffle(randIdxVector.begin(), randIdxVector.end(), std::mt19937(std::random_device()()));
+    shuffle(randIdxVector.begin(), randIdxVector.end(), rng);
 
     //creating first variant with random 1's
     for (int idx = 0; idx < initBits; ++idx) {
         varDNAs[0][randIdxVector[idx]] = 1;
     }
-
 
     for (int var = 0; var < maxVars; ++var) {
         curVarInf[var] = 0;
@@ -254,7 +253,7 @@ int Graph::SIRwithVariants(int p0, double varAlphas[], bool coupled, double newV
                     } else {
                         immunityUpdate(immunity[node], varDNAs[curStrainID], immuStrength);
                     }
-                    if (newVarProb > 0 && drand48() < newVarProb) { // New Variant
+                    if (newVarProb > 0 && std::uniform_real_distribution<double>(0.0, 1.0)(rng) < newVarProb) { // New Variant
                         varCnt += 1;
                         if (varCnt == maxVars) {
                             cout << "ERROR!! Variant count exceeds the maximum!" << endl;
@@ -375,8 +374,8 @@ bool Graph::compareSeverity(pair<double, int> severity1, pair<double, int> sever
 int
 Graph::newVariant(vector<int> &origVar, const double &origVarAlpha, vector<int> &newVar, double &newVarAlpha,
                   vector<int> &rndIdxVec, int minEdits, int maxEdits, double alphaDelta, bool coupled) {
-    shuffle(rndIdxVec.begin(), rndIdxVec.end(), std::mt19937(std::random_device()()));
-    int numEdits = (int) lrand48() % (maxEdits - minEdits + 1) + minEdits;
+    shuffle(rndIdxVec.begin(), rndIdxVec.end(), rng);
+    int numEdits = std::uniform_int_distribution<int>(minEdits, maxEdits)(rng);
     newVar = origVar;
     for (int idx = 0; idx < numEdits; ++idx) {
         vectorFlip(newVar, rndIdxVec[idx]);
@@ -387,7 +386,7 @@ Graph::newVariant(vector<int> &origVar, const double &origVarAlpha, vector<int> 
         double fullChangeRange;
         // Find value in range [0.0, 2 * alphaDelta] where alphaDelta is the limit alpha can change by.
         do {
-            fullChangeRange = drand48();
+            fullChangeRange = std::uniform_real_distribution<double>(0.0, 1.0)(rng);;
         } while (fullChangeRange > alphaDelta * 2);
         // newVarAlpha is in range [origVarAlpha - alphaDelta, origVarAlpha + alphaDelta].
         newVarAlpha = origVarAlpha + (fullChangeRange - alphaDelta);

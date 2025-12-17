@@ -7,11 +7,10 @@
 #include <sstream>
 #include <cmath>
 #include <bitset>
-#include <random>
-#include <algorithm>
 
-// Variant Controls
-const int DNALen = 128;
+#include <algorithm>
+#include "../constants.h"
+#include "../rng.h"
 
 using namespace std;
 
