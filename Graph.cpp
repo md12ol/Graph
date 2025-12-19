@@ -62,8 +62,8 @@ int Graph::fill(const vector<int> &weights, bool diag) {
                 adjM[col][row] = weights[idx];
                 if (adjM[row][col] > 0) numEdges += 1;
                 totWeight += weights[idx];
-                idx += 1;
                 if (weights[idx] > maxWeight) maxWeight = weights[idx];
+                idx += 1;
             }
         }
     }
